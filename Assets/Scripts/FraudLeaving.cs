@@ -6,11 +6,11 @@ using UnityEngine.Events;
 
 public class FraudLeaving : MonoBehaviour
 {
-    [SerializeField] private UnityEvent _left;
+    public event UnityAction Lost;
 
     private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent(out Fraud _))
-            _left.Invoke();
+            Lost?.Invoke();
     }
 }

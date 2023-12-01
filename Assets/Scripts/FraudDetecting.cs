@@ -6,11 +6,11 @@ using UnityEngine.Events;
 
 public class FraudDetecting : MonoBehaviour
 {
-    [SerializeField] private UnityEvent _detected;
+    public event UnityAction Detected;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Fraud _))
-            _detected?.Invoke();
+            Detected?.Invoke();
     }
 }

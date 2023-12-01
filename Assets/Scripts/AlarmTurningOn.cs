@@ -6,23 +6,46 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class AlarmTurningOn : MonoBehaviour
 {
-    private AudioSource _alarm;
+    [SerializeField] private FraudDetecting _detector;
+    
+    private AudioSource _sound;
     private float _maxVolume = 1;
-    private float _raisingDuration = 1;
+    private float _raisingDuration = 2;
     private float _runningTime;
+
+    private void OnEnable()
+    {
+        _detector.Detected += TurnOn;
+    }
+
+    private void OnDisable()
+    {
+        _detector.Detected -= TurnOn;
+    }
 
     private void Start()
     {
-        _alarm = GetComponent<AudioSource>();
-        _alarm.Play();
+        _sound = GetComponent<AudioSource>();
     }
 
-    private void Update()
+    private void TurnOn()
     {
+        _sound.Play();
+        StartCoroutine(VolumeIncrease());
+    }
+
+    private IEnumerator VolumeIncrease()
+    {
+        _sound.volume = 0;
         _runningTime += Time.deltaTime;
-        
+     
         float maxVolumeDelta = _runningTime / _raisingDuration;
         
-        _alarm.volume = Mathf.MoveTowards(0, _maxVolume, maxVolumeDelta);
+        while (_sound.volume < _maxVolume)
+        {
+            _sound.volume = Mathf.MoveTowards(_sound.volume, _maxVolume, maxVolumeDelta);
+
+            yield return null;
+        }
     }
 }
