@@ -32,6 +32,7 @@ public class AlarmController : MonoBehaviour
 
     private void TurnOn()
     {
+        _runningTime = 0;
         _sound.volume = 0;
         _sound.Play();
         
@@ -40,6 +41,8 @@ public class AlarmController : MonoBehaviour
     
     private void TurnOff()
     {
+        _runningTime = 0;
+        
         StartCoroutine(ChangeVolume(_maxVolume, 0));
         StartCoroutine(StopPlaying());
     }
