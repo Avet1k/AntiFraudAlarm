@@ -10,7 +10,7 @@ public class AlarmTurningOff : MonoBehaviour
     
     private AudioSource _sound;
     private float _maxVolume = 1;
-    private float _raisingDuration = 2;
+    private float _raisingDuration = 1;
     private float _runningTime;
 
     private void OnEnable()
@@ -31,21 +31,28 @@ public class AlarmTurningOff : MonoBehaviour
     private void TurnOff()
     {
         StartCoroutine(VolumeDecrease());
-        // _sound.Stop();
+        StartCoroutine(StopPlaying());
     }
 
     private IEnumerator VolumeDecrease()
     {
-        _runningTime += Time.deltaTime;
-
-        float maxVolumeDelta = _runningTime / _raisingDuration;
-
         while (_sound.volume > 0)
         {
+            _runningTime += Time.deltaTime;
+         
+            float maxVolumeDelta = _runningTime / _raisingDuration;
+            
             _sound.volume = Mathf.MoveTowards(_maxVolume, 0, maxVolumeDelta);
 
             yield return null;
         }
+    }
+
+    private IEnumerator StopPlaying()
+    {
+        yield return new WaitUntil(() => _sound.volume == 0);
+        
+        _sound.Stop();
     }
 } 
 
