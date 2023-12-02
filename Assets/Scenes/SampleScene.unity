@@ -458,8 +458,8 @@ GameObject:
   - component: {fileID: 1677185691}
   - component: {fileID: 1677185690}
   - component: {fileID: 1677185689}
-  - component: {fileID: 1677185694}
   - component: {fileID: 1677185696}
+  - component: {fileID: 1677185694}
   - component: {fileID: 1677185697}
   m_Layer: 0
   m_Name: House

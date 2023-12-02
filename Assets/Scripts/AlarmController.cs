@@ -4,22 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class AlarmTurningOff : MonoBehaviour
+public class AlarmController : MonoBehaviour
 {
-    [SerializeField] private FraudLeaving _detector;
+    [SerializeField] private FraudDetector _detector;
     
     private AudioSource _sound;
     private float _maxVolume = 1;
-    private float _raisingDuration = 1;
+    private float _changingDuration = 1;
     private float _runningTime;
 
     private void OnEnable()
     {
+        _detector.Detected += TurnOn;
         _detector.Lost += TurnOff;
     }
 
     private void OnDisable()
     {
+        _detector.Detected -= TurnOn;
         _detector.Lost -= TurnOff;
     }
 
@@ -28,31 +30,38 @@ public class AlarmTurningOff : MonoBehaviour
         _sound = GetComponent<AudioSource>();
     }
 
+    private void TurnOn()
+    {
+        _sound.volume = 0;
+        _sound.Play();
+        
+        StartCoroutine(ChangeVolume(0, _maxVolume));
+    }
+    
     private void TurnOff()
     {
-        StartCoroutine(VolumeDecrease());
+        StartCoroutine(ChangeVolume(_maxVolume, 0));
         StartCoroutine(StopPlaying());
     }
 
-    private IEnumerator VolumeDecrease()
+    private IEnumerator ChangeVolume(float current, float target)
     {
-        while (_sound.volume > 0)
+        while (_sound.volume != target)
         {
             _runningTime += Time.deltaTime;
-         
-            float maxVolumeDelta = _runningTime / _raisingDuration;
+              
+            float maxVolumeDelta = _runningTime / _changingDuration;
             
-            _sound.volume = Mathf.MoveTowards(_maxVolume, 0, maxVolumeDelta);
+            _sound.volume = Mathf.MoveTowards(current, target, maxVolumeDelta);
 
             yield return null;
         }
     }
-
+    
     private IEnumerator StopPlaying()
     {
         yield return new WaitUntil(() => _sound.volume == 0);
         
         _sound.Stop();
     }
-} 
-
+}
